@@ -27,7 +27,7 @@ extension JSON
 {
     public init(_ data: Data) throws
     {
-        self = try Self(JSONSerialization.jsonObject(with: data))
+        self = try JSON(jsonObject: JSONSerialization.jsonObject(with: data))
     }
     
     public func encode() throws -> Data
@@ -39,7 +39,7 @@ extension JSON
 /// JSON Object Conversion
 public extension JSON
 {
-    init(_ jsonObject: JSONObject) throws
+    init(jsonObject: JSONObject) throws
     {
         switch jsonObject
         {
