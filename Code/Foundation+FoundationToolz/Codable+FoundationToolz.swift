@@ -57,10 +57,6 @@ public extension Encodable
     
     func encode() -> Data?
     {
-        let jsonEncoder = JSONEncoder()
-        
-        jsonEncoder.outputFormatting = .prettyPrinted
-        
         do
         {
             return try encode() as Data
