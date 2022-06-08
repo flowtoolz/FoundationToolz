@@ -129,7 +129,7 @@ open class Executable
     
     // MARK: - Configuration
     
-    public struct Configuration {
+    public struct Configuration: Codable {
         
         public init(path: String,
                     arguments: [String] = [],
