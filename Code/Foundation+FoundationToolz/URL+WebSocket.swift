@@ -76,14 +76,14 @@ public class WebSocket
     
     // MARK: - Sending Messages
     
-    public func send(_ data: Data, handleCompletion: @escaping (Error?) -> Void)
+    public func send(_ data: Data) async throws
     {
-        webSocketTask.send(.data(data), completionHandler: handleCompletion)
+        try await webSocketTask.send(.data(data))
     }
     
-    public func send(_ text: String, handleCompletion: @escaping (Error?) -> Void)
+    public func send(_ text: String) async throws
     {
-        webSocketTask.send(.string(text), completionHandler: handleCompletion)
+        try await webSocketTask.send(.string(text))
     }
     
     // MARK: - WebSocket Task
