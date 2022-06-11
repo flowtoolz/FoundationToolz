@@ -55,9 +55,10 @@ public class WebSocket
     {
         isClosed = true
         webSocketTask.cancel()
+        didClose(self)
     }
     
-    private(set) var isClosed = false
+    public private(set) var isClosed = false
     
     public var didReceiveData: (Data) -> Void =
     {
@@ -72,6 +73,11 @@ public class WebSocket
     public var didReceiveError: (WebSocket, Error) -> Void =
     {
         _, _ in log(warning: "Error handler not set")
+    }
+    
+    public var didClose: (WebSocket) -> Void =
+    {
+        _ in log(warning: "Close handler not set")
     }
     
     // MARK: - Sending Messages
