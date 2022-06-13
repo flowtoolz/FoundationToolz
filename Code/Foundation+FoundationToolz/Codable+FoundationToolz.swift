@@ -44,22 +44,24 @@ public extension Decodable
 public extension Encodable
 {
     @discardableResult
-    func save(toFilePath filePath: String) -> URL?
+    func save(toFilePath filePath: String,
+              options: JSONEncoder.OutputFormatting = .prettyPrinted) -> URL?
     {
-        encode()?.save(toFilePath: filePath)
+        encode(options: options)?.save(toFilePath: filePath)
     }
     
     @discardableResult
-    func save(to file: URL?) -> URL?
+    func save(to file: URL?,
+              options: JSONEncoder.OutputFormatting = .prettyPrinted) -> URL?
     {
-        encode()?.save(to: file)
+        encode(options: options)?.save(to: file)
     }
     
-    func encode() -> Data?
+    func encode(options: JSONEncoder.OutputFormatting = .prettyPrinted) -> Data?
     {
         do
         {
-            return try encode() as Data
+            return try encode(options: options) as Data
         }
         catch
         {
@@ -68,10 +70,10 @@ public extension Encodable
         }
     }
     
-    func encode() throws -> Data
+    func encode(options: JSONEncoder.OutputFormatting = .prettyPrinted) throws -> Data
     {
         let jsonEncoder = JSONEncoder()
-        jsonEncoder.outputFormatting = .prettyPrinted
+        jsonEncoder.outputFormatting = options
         return try jsonEncoder.encode(self)
     }
 }
