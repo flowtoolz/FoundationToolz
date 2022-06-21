@@ -1,3 +1,5 @@
+#if os(macOS)
+
 import Foundation
 import SwiftyToolz
 
@@ -144,3 +146,5 @@ open class Executable
         public var environment: [String: String]
     }
 }
+
+#endif
