@@ -23,24 +23,28 @@ public extension FileManager
     @discardableResult
     func removeItems(in directory: URL?) -> Bool
     {
-        remove(items(in: directory))
+        remove(items(inDirectory: directory, recursive: false))
     }
     
-    func items(in directory: URL?) -> [URL]
+    func items(inDirectory directory: URL?, recursive: Bool) -> [URL]
     {
         guard let directory = directory else { return [] }
         
-        do
+        var options: DirectoryEnumerationOptions =
+        [
+            .skipsHiddenFiles,
+            .skipsPackageDescendants
+        ]
+        
+        if !recursive
         {
-            return try contentsOfDirectory(at: directory,
-                                           includingPropertiesForKeys: nil,
-                                           options: [.skipsHiddenFiles])
+            options.insert(.skipsSubdirectoryDescendants)
         }
-        catch
-        {
-            log(error: error.localizedDescription)
-            return []
-        }
+        
+        return enumerator(at: directory,
+                          includingPropertiesForKeys: [.isDirectoryKey],
+                          options: options,
+                          errorHandler: nil)?.compactMap { $0 as? URL } ?? []
     }
     
     /**
