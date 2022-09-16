@@ -22,7 +22,7 @@ public extension Decodable
     
     init?(_ jsonData: Data?)
     {
-        guard let jsonData = jsonData else { return nil }
+        guard let jsonData else { return nil }
         
         do
         {

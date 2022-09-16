@@ -43,7 +43,7 @@ public extension Data
     @discardableResult
     func save(to file: URL?) -> URL?
     {
-        guard let file = file else { return nil }
+        guard let file else { return nil }
         
         guard FileManager.default.itemExists(file) else
         {
