@@ -9,7 +9,7 @@ extension Dictionary
     {
         let parameterArray = self.map
         {
-            (key, value) -> String in
+            (key, value) in
             
             let key = String(describing: key).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
             let value = String(describing: value).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
