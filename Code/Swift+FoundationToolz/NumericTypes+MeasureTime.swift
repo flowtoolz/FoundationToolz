@@ -4,9 +4,12 @@ public extension Double
 {
     static var uptimeMilliseconds: Double
     {
-        Double(uptimeNanoSeconds) / 1000000.0
+        Double(UInt64.uptimeNanoSeconds) / 1000000.0
     }
-    
+}
+
+public extension UInt64
+{
     static var uptimeNanoSeconds: UInt64
     {
         let ticks = mach_absolute_time()
