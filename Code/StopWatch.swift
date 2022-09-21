@@ -10,7 +10,7 @@ public struct StopWatch
     {
         let durationNanoSeconds = UInt64.uptimeNanoSeconds - startTime
         
-        if durationNanoSeconds > 1000000
+        if durationNanoSeconds > 1000000000
         {
             print("⏱ " + whatIsMeasured + ": \(Double(durationNanoSeconds) / 1000000000.0) seconds")
         }

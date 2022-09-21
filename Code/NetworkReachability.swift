@@ -35,7 +35,6 @@ public class NetworkReachability
     
     public func remove(observer: AnyObject)
     {
-        // TODO: use SwiftyToolz to properly hash observers
         observers.removeAll { $0.observer === observer }
     }
     
