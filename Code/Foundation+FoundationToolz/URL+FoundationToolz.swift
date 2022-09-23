@@ -109,7 +109,7 @@ public extension URL
                 return result
             }
         }
-        catch { log(error) }
+        catch { log(error.readable) }
         
         return hasDirectoryPath
     }

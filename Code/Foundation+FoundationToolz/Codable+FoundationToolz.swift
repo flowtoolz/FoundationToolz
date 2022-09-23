@@ -30,7 +30,7 @@ public extension Decodable
         }
         catch
         {
-            log(error)
+            log(error.readable)
             return nil
         }
     }

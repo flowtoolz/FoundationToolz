@@ -62,7 +62,7 @@ open class Executable
             } else {
                 inPipe.fileHandleForWriting.write(input)
             }
-        } catch { log(error) }
+        } catch { log(error.readable) }
     }
     
     private let inPipe = Pipe()
@@ -117,7 +117,7 @@ open class Executable
         do {
             try process.run()
         } catch {
-            log(error)
+            log(error.readable)
         }
     }
     
