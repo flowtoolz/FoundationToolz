@@ -16,6 +16,13 @@ public extension Date
         self = date
     }
     
+    init?(year: Int, month: Int, day: Int)
+    {
+        let components = DateComponents(year: year, month: month, day: day)
+        guard let date = Calendar.current.date(from: components) else { return nil }
+        self = date
+    }
+    
     var utcString: String
     {
         if #available(OSX 10.12, *)
