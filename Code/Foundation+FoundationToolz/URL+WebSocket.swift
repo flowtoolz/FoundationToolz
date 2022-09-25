@@ -20,21 +20,28 @@ public class WebSocket
         self.url = try url.with(scheme: .ws)
         webSocketTask = URLSession.shared.webSocketTask(with: self.url)
         webSocketTask.resume()
-        receiveMessage()
+        receiveNextMessage()
     }
     
-    deinit { close() }
-    
-    // MARK: - Receiving Messages
-    
-    private func receiveMessage() {
-        webSocketTask.receive
+    deinit
+    {
+        if webSocketTask.state == .suspended || webSocketTask.state == .running
         {
-            [weak self] result in self?.process(result)
+            didCloseWithError(self, "WebSocket is being deinitialized while still suspended or running")
         }
     }
     
-    private func process(_ result: Result<URLSessionWebSocketTask.Message, Error>)
+    // MARK: - Receiving Messages
+    
+    private func receiveNextMessage()
+    {
+        webSocketTask.receive
+        {
+            [weak self] result in self?.didReceive(result)
+        }
+    }
+    
+    private func didReceive(_ result: Result<URLSessionWebSocketTask.Message, Error>)
     {
         switch result
         {
@@ -43,22 +50,14 @@ public class WebSocket
             {
             case .data(let data): didReceiveData(data)
             case .string(let text): didReceiveText(text)
-            @unknown default: log(error: "Unknown type of WebSocket message")
+            default: log(error: "Unknown type of WebSocket message")
             }
-        case .failure(let error): didReceiveError(self, error)
+            
+            receiveNextMessage()
+        case .failure(let error):
+            didCloseWithError(self, error)
         }
-        
-        if !isClosed { receiveMessage() }
     }
-    
-    public func close()
-    {
-        isClosed = true
-        webSocketTask.cancel()
-        didClose(self)
-    }
-    
-    public private(set) var isClosed = false
     
     public var didReceiveData: (Data) -> Void =
     {
@@ -70,14 +69,9 @@ public class WebSocket
         _ in log(warning: "Text handler not set")
     }
     
-    public var didReceiveError: (WebSocket, Error) -> Void =
+    public var didCloseWithError: (WebSocket, Error) -> Void =
     {
         _, _ in log(warning: "Error handler not set")
-    }
-    
-    public var didClose: (WebSocket) -> Void =
-    {
-        _ in log(warning: "Close handler not set")
     }
     
     // MARK: - Sending Messages
