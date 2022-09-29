@@ -53,7 +53,7 @@ public extension JSON
         case let array as [JSONObject]:
             self = try .array(array.map(Self.init))
         case let dictionary as [String: JSONObject]:
-            self = try .dictionary(dictionary.mapValues(Self.init))
+            self = try .object(dictionary.mapValues(Self.init))
         default:
             throw "Invalid JSON object: \(jsonObject)"
         }
@@ -73,7 +73,7 @@ public extension JSON
             return string
         case .array(let array):
             return array.map { $0.jsonObject() }
-        case .dictionary(let dictionary):
+        case .object(let dictionary):
             return dictionary.mapValues { $0.jsonObject() }
         }
     }
