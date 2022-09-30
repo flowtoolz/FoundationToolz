@@ -3,6 +3,11 @@ import SwiftyToolz
 
 public extension String
 {
+    func removing(_ substring: String) -> String
+    {
+        replacingOccurrences(of: substring, with: "")
+    }
+    
     init(unicode: Int)
     {
         var unicodeCharacter = unichar(unicode)
