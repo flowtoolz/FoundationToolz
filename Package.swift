@@ -4,7 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "FoundationToolz",
-    platforms: [.iOS(.v12), .tvOS(.v12), .macOS(.v10_14)],
+    platforms: [.iOS(.v12), .tvOS(.v12), .macOS(.v10_14), .watchOS(.v5)],
     products: [
         .library(
             name: "FoundationToolz",
@@ -14,7 +14,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/flowtoolz/SwiftyToolz.git",
-            exact: "0.1.0"
+            exact: "0.1.1"
         )
     ],
     targets: [

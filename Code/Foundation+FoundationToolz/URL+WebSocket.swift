@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyToolz
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, *)
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public extension URL
 {
     func webSocket() throws -> WebSocket
@@ -10,7 +10,7 @@ public extension URL
     }
 }
 
-@available(OSX 10.15, iOS 13.0, tvOS 13.0, *)
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public class WebSocket
 {
     // MARK: - Life Cycle

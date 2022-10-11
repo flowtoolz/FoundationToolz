@@ -1,7 +1,7 @@
 import Foundation
 import SwiftyToolz
 
-@available(macOS 12.0, iOS 15.0, *)
+@available(macOS 12.0, iOS 15.0, tvOS 13.0.0, watchOS 6.0.0, *)
 public extension URL
 {
     func get<Value: Decodable>(_ type: Value.Type = Value.self) async throws -> Value
