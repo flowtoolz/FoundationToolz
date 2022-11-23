@@ -4,7 +4,30 @@ import SwiftyToolz
 @available(macOS 12.0, iOS 15.0, tvOS 13.0.0, watchOS 6.0.0, *)
 public extension URL
 {
+    /**
+     Get request returning the server response as JSON encodable type `Value`
+     
+     This only works when the server returns a valid JSON encoding of `Value`! It might not work for example when the server returns a pure unencoded String. In that case, use `func get() async throws -> Data` instead!
+    **/
     func get<Value: Decodable>(_ type: Value.Type = Value.self) async throws -> Value
+    {
+        let (data, httpResponse) = try await getDataAndResponse()
+        
+        guard let value = Value(data) else
+        {
+            throw RequestError.decodingDataFailed(httpResponse, data)
+        }
+        
+        return value
+    }
+    
+    /// Get request returning the pure data that the server sends in response
+    func get() async throws -> Data
+    {
+        try await getDataAndResponse().0
+    }
+    
+    private func getDataAndResponse() async throws -> (Data, HTTPURLResponse)
     {
         do
         {
@@ -17,12 +40,7 @@ public extension URL
                 throw RequestError.validatingResponseStatusFailed(httpResponse, data)
             }
             
-            guard let value = Value(data) else
-            {
-                throw RequestError.decodingDataFailed(httpResponse, data)
-            }
-            
-            return value
+            return (data, httpResponse)
         }
         catch let nsError as NSError
         {
