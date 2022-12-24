@@ -3,6 +3,11 @@ import SwiftyToolz
 
 public extension String
 {
+    var lines: [String]
+    {
+        components(separatedBy: .newlines)
+    }
+    
     func removing(_ substring: String) -> String
     {
         replacingOccurrences(of: substring, with: "")
