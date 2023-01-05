@@ -3,6 +3,11 @@ import SwiftyToolz
 
 public extension String
 {
+    func removing(prefix: String) -> String
+    {
+        hasPrefix(prefix) ? String(dropFirst(prefix.count)) : self
+    }
+    
     var lines: [String]
     {
         components(separatedBy: .newlines)
