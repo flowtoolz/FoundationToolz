@@ -96,8 +96,10 @@ public extension URL
         }
     }
     
-    enum RequestError: Error, CustomStringConvertible, CustomDebugStringConvertible
+    enum RequestError: Error, CustomStringConvertible, CustomDebugStringConvertible, ReadableErrorConvertible
     {
+        public var readableErrorMessage: String { description }
+        
         public var localizedDescription: String { description }
         
         public var debugDescription: String { description }
