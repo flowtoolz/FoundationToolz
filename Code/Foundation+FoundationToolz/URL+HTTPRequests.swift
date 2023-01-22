@@ -42,6 +42,11 @@ public extension URL
             
             return (data, httpResponse)
         }
+        catch let requestError as RequestError
+        {
+            log(error: requestError.description)
+            throw requestError
+        }
         catch let nsError as NSError
         {
             let isURLError = nsError.domain == URLError.errorDomain
@@ -50,10 +55,12 @@ public extension URL
             log(error: requestError.description)
             throw requestError
         }
-        catch let requestError as RequestError
+        catch
         {
-            log(error: requestError.description)
-            throw requestError
+            log(warning: "URL request produced error of unexpected type \(typeName(error))")
+            let readableError = ReadableError(error.localizedDescription)
+            log(readableError)
+            throw readableError
         }
     }
     
