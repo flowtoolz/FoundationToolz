@@ -45,13 +45,14 @@ public extension String
         URL(fileURLWithPath: self).lastPathComponent
     }
     
-    var fileExtension: String?
+    func fileExtension(maxLength: Int = 5) -> String?
     {
-        let parts = components(separatedBy: ".")
-        guard let lastPart = parts.last,
-            parts.count > 1,
-            (1 ... 4).contains(lastPart.count) else { return nil }
-        return lastPart
+        let components = components(separatedBy: ".")
+        guard let lastComponent = components.last,
+            components.count > 1,
+            lastComponent.count > 0,
+            lastComponent.count <= maxLength else { return nil }
+        return lastComponent
     }
     
     func dateString(fromFormat: String, toFormat: String) -> String
