@@ -5,13 +5,19 @@ public extension Bundle
 {
     func debugLogInfos()
     {
-        if let infoDictionary
-        {
-            log(infoDictionary.debugDescription)
-        }
-        else
+        guard let infoDictionary else
         {
             log(error: "Bundle \(bundleURL.lastPathComponent) has no infoDictionary")
+            return
+        }
+        
+        do
+        {
+            log("Main Bundle:\n" + (try infoDictionary.prettyPrinted))
+        }
+        catch
+        {
+            log(error: error.localizedDescription)
         }
     }
     

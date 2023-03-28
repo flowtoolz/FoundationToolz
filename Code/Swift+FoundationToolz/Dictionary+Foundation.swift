@@ -1,10 +1,24 @@
 import Foundation
 import SwiftyToolz
 
-extension Dictionary
+public extension Dictionary
 {
-    // MARK: - Dictionary representing URL query parameters
+    var prettyPrinted: String
+    {
+        get throws
+        {
+            if let infoString = try Data(jsonObject: self).utf8String
+            {
+                return infoString
+            }
+            else
+            {
+                throw "Could not decode Data (encoded Dictionary) to String"
+            }
+        }
+    }
     
+    /// Dictionary representing URL query parameters
     func stringFromParameters() -> String
     {
         let parameterArray = self.map
