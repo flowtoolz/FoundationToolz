@@ -117,7 +117,7 @@ open class Executable
     }
     
     public func stop() {
-        process.terminate()
+        if process.isRunning { process.terminate() }
     }
     
     public var isRunning: Bool { process.isRunning }
