@@ -9,8 +9,8 @@ open class Executable
     // MARK: - Life Cycle
     
     public init(config: Configuration) throws {
-        guard FileManager.default.fileExists(atPath: config.path) else {
-            throw "Executable does not exist at given path \(config.path)"
+        guard FileManager.default.fileExists(atPath: config.command) else {
+            throw "Executable does not exist at given path \(config.command)"
         }
         
         try setupProcess(with: config)
@@ -86,13 +86,30 @@ open class Executable
     // MARK: - Process
     
     private func setupProcess(with config: Configuration) throws {
-        process.executableURL = URL(fileURLWithPath: config.path)
+        // use a regular shell session, so we can add paths to PATH before running the command
+        process.executableURL = URL(fileURLWithPath: "/bin/zsh")
+
+        // give the command and its arguments as arguments to the Z-Shell, add 2 paths to the environment
+        let commandArgumentList = config.arguments.joined(separator: " ")
         
+        let additionalPaths = [
+            "/opt/homebrew/bin",
+            "/usr/local/bin"
+        ]
+        
+        // alternatively we could "source ~/.zprofile; source ~/.zshrc;" or maybe add the "-i" argument to process arguments to start an interactive shell which might get all the usual environment variables by sourcing .zshrc etc.
+        let addAdditionalPathsCommand = "PATH=$PATH:\(additionalPaths.joined(separator: ":"));"
+        
+        process.arguments = [
+            "-c",
+            "\(addAdditionalPathsCommand) \(config.command) \(commandArgumentList)"
+        ]
+        
+        // Our basic environment is the one of the current process extended by the given custom one
         let currentEnvironment = ProcessInfo.processInfo.environment
         process.environment = currentEnvironment.merging(config.environment) { $1 }
         
-        process.arguments = config.arguments
-        
+        // call the client's termination handler when the process terminates
         process.terminationHandler = { [weak self] process in
             log("\(Self.self) terminated. code: \(process.terminationReason.rawValue)")
             self?.didTerminate()
@@ -131,12 +148,12 @@ open class Executable
         public init(path: String,
                     arguments: [String] = [],
                     environment: [String : String] = [:]) {
-            self.path = path
+            self.command = path
             self.arguments = arguments
             self.environment = environment
         }
         
-        public var path: String
+        public var command: String
         public var arguments: [String]
         public var environment: [String: String]
     }
