@@ -103,10 +103,9 @@ open class Executable
         log(warning: "Executable did terminate, but handler has not been set")
     }
     
-    public func run() {
+    public func run() throws {
         guard process.executableURL != nil else {
-            log(error: "\(Self.self) has no valid executable set")
-            return
+            throw "\(Self.self) has no valid executable set"
         }
         
         guard !isRunning else {
@@ -114,11 +113,7 @@ open class Executable
             return
         }
         
-        do {
-            try process.run()
-        } catch {
-            log(error.readable)
-        }
+        try process.run()
     }
     
     public func stop() {
