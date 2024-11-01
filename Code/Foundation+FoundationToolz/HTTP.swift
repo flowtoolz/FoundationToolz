@@ -101,6 +101,8 @@ public enum HTTP {
     public enum RequestError: Error, CustomStringConvertible {
         init(_ error: Error) {
             switch error {
+            case let requestError as RequestError:
+                self = requestError
             case let invalidStringError as InvalidURLStringError:
                 self = .invalidURLString(invalidStringError)
             case let encodingError as EncodingError:
