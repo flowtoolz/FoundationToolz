@@ -1,6 +1,6 @@
 import Foundation
 
-@available(macOS 14.0, *)
+@available(macOS 14.0, iOS 17.0, *)
 public enum HTTP
 {
     static func sendRequest<Response: Decodable>
@@ -168,7 +168,7 @@ public enum HTTP
     }
 }
 
-@available(macOS 14.0, *)
+@available(macOS 14.0, iOS 17.0, *)
 extension URL
 {
     init(validating urlString: URLString) throws(InvalidURLStringError)
@@ -200,7 +200,7 @@ public struct URLString: ExpressibleByStringLiteral
     let value: String
 }
 
-@available(macOS 13.0, *)
+@available(macOS 14.0, iOS 16.0, *)
 func withTimeout<Result>
 (
     after duration: Duration,
@@ -234,7 +234,7 @@ async throws -> Result
     }
 }
 
-@available(macOS 13.0, *)
+@available(macOS 13.0, iOS 16.0, *)
 public struct TimeoutError: Error
 {
     let duration: Duration
