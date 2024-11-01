@@ -63,6 +63,11 @@ public extension Data
         }
     }
     
+    var debugPreview: String
+    {
+        utf8String ?? debugDescription
+    }
+    
     var utf8String: String?
     {
         String(data: self, encoding: .utf8)
