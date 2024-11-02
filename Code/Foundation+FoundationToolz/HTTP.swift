@@ -3,14 +3,14 @@ import Foundation
 @available(macOS 14.0, iOS 17.0, *)
 public enum HTTP
 {
-    static func sendRequest<Response: Decodable>
+    public static func sendRequest<Response: Decodable>
     (
         to endpoint: URLString,
         using method: Method = .GET,
         content: Encodable? = nil,
         authorizationValue: String? = nil,
         addingHeaders headersToAdd: [String: String]? = nil,
-        timeoutInterval: Duration = .seconds(10)
+        timeoutInterval: Duration = .seconds(60)
     )
     async throws(RequestError) -> Response
     {
@@ -27,14 +27,14 @@ public enum HTTP
                                      timeoutInterval: timeoutInterval)
     }
     
-    static func sendRequest<Response: Decodable>
+    public static func sendRequest<Response: Decodable>
     (
         to endpoint: URL,
         using method: Method = .GET,
         content: Encodable? = nil,
         authorizationValue: String? = nil,
         addingHeaders headersToAdd: [String: String]? = nil,
-        timeoutInterval: Duration = .seconds(10)
+        timeoutInterval: Duration = .seconds(60)
     )
     async throws(RequestError) -> Response
     {
@@ -58,14 +58,14 @@ public enum HTTP
         catch { throw RequestError(error) }
     }
     
-    static func sendRequest
+    public static func sendRequest
     (
         to endpoint: URL,
         using method: Method = .GET,
         content: Encodable? = nil,
         authorizationValue: String? = nil,
         addingHeaders headersToAdd: [String: String]? = nil,
-        timeoutInterval: Duration = .seconds(10)
+        timeoutInterval: Duration = .seconds(60)
     )
     async throws(RequestError) -> (Data, HTTPURLResponse)
     {
@@ -106,7 +106,7 @@ public enum HTTP
         return (responseContent, httpResponse)
     }
     
-    enum Method: String
+    public enum Method: String
     {
         case GET, POST, PUT, DELETE, PATCH
     }
