@@ -1,4 +1,6 @@
+import FoundationToolz
 import Foundation
+import SwiftyToolz
 
 @available(macOS 14.0, iOS 17.0, *)
 public enum HTTP
@@ -178,102 +180,4 @@ public enum HTTP
         case decodingError(DecodingError)
         case unexpectedError(Error)
     }
-}
-
-@available(macOS 14.0, iOS 17.0, *)
-extension URL
-{
-    init(validating urlString: URLString) throws(InvalidURLStringError)
-    {
-        guard let url = URL(string: urlString.value, encodingInvalidCharacters: false)
-        else { throw InvalidURLStringError(invalidURLString: urlString) }
-        
-        self = url
-    }
-}
-
-// TODO: everything from here on belongs to SwiftyToolz !
-
-public struct InvalidURLStringError: Error
-{
-    let invalidURLString: URLString
-}
-
-// Allow URLString as right operand
-public func + (base: URLString, path: URLString) -> URLString {
-   base + path.value
-}
-
-// Append path operator
-public func + (base: URLString, path: String) -> URLString {
-   // Handle empty path
-   guard !path.isEmpty else { return base }
-   
-   // Get base without trailing slash
-   let baseValue = base.value.hasSuffix("/")
-       ? String(base.value.dropLast())
-       : base.value
-   
-   // Get path without leading slash
-   let pathValue = path.hasPrefix("/")
-       ? String(path.dropFirst())
-       : path
-   
-   // Combine with single slash
-   return URLString(baseValue + "/" + pathValue)
-}
-
-public struct URLString: ExpressibleByStringLiteral, Sendable
-{
-    public init(stringLiteral value: String)
-    {
-        self.value = value
-    }
-    
-    public init(_ value: String)
-    {
-        self.value = value
-    }
-    
-    public let value: String
-}
-
-@available(macOS 14.0, iOS 16.0, *)
-func withTimeout<Result>
-(
-    after duration: Duration,
-    startLongOperation: @escaping () async throws -> Result
-)
-async throws -> Result
-{
-    try await withThrowingTaskGroup(of: Result.self)
-    {
-        tasks in
-        
-        tasks.addTask
-        {
-            try await startLongOperation()
-        }
-        
-        tasks.addTask
-        {
-            try await Task.sleep(for: duration)
-            throw TimeoutError(duration: duration)
-        }
-        
-        guard let result = try await tasks.next() else
-        {
-            /// will never happen since `tasks` is not empty
-            throw CancellationError()
-        }
-        
-        tasks.cancelAll()
-        return result
-    }
-}
-
-@available(macOS 13.0, iOS 16.0, *)
-public struct TimeoutError: Error
-{
-    let duration: Duration
 }

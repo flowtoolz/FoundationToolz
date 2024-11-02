@@ -1,6 +1,23 @@
 import Foundation
 import SwiftyToolz
 
+@available(macOS 14.0, iOS 17.0, *)
+extension URL
+{
+    init(validating urlString: URLString) throws(InvalidURLStringError)
+    {
+        guard let url = URL(string: urlString.value, encodingInvalidCharacters: false)
+        else { throw InvalidURLStringError(invalidURLString: urlString) }
+        
+        self = url
+    }
+}
+
+public struct InvalidURLStringError: Error
+{
+    let invalidURLString: URLString
+}
+
 public extension URL
 {
     func mapSecurityScoped<Mapped>(_ map: (URL) throws -> Mapped) throws -> Mapped
