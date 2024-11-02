@@ -10,21 +10,19 @@ public enum HTTP
         content: Encodable? = nil,
         authorizationValue: String? = nil,
         addingHeaders headersToAdd: [String: String]? = nil,
-        timeoutInterval: Duration = .seconds(60)
+        timeoutInterval: Duration = defaultTimeoutInterval
     )
     async throws(RequestError) -> Response
     {
-        let url: URL
-        
-        do { url = try URL(validating: endpoint) }
-        catch { throw .invalidURLString(error) }
-        
-        return try await sendRequest(to: url,
-                                     using: method,
-                                     content: content,
-                                     authorizationValue: authorizationValue,
-                                     addingHeaders: headersToAdd,
-                                     timeoutInterval: timeoutInterval)
+        try await throwingRequestError
+        {
+            try await sendRequest(to: try URL(validating: endpoint),
+                                  using: method,
+                                  content: content,
+                                  authorizationValue: authorizationValue,
+                                  addingHeaders: headersToAdd,
+                                  timeoutInterval: timeoutInterval)
+        }
     }
     
     public static func sendRequest<Response: Decodable>
@@ -34,7 +32,7 @@ public enum HTTP
         content: Encodable? = nil,
         authorizationValue: String? = nil,
         addingHeaders headersToAdd: [String: String]? = nil,
-        timeoutInterval: Duration = .seconds(60)
+        timeoutInterval: Duration = defaultTimeoutInterval
     )
     async throws(RequestError) -> Response
     {
@@ -50,12 +48,11 @@ public enum HTTP
             throw .unexpectedStatusCode(httpResponse, responseContent)
         }
         
-        do
+        return try await throwingRequestError
         {
-            return try JSONDecoder().decode(Response.self,
-                                            from: responseContent)
+            try JSONDecoder().decode(Response.self,
+                                     from: responseContent)
         }
-        catch { throw RequestError(error) }
     }
     
     public static func sendRequest
@@ -65,10 +62,12 @@ public enum HTTP
         content: Encodable? = nil,
         authorizationValue: String? = nil,
         addingHeaders headersToAdd: [String: String]? = nil,
-        timeoutInterval: Duration = .seconds(60)
+        timeoutInterval: Duration = defaultTimeoutInterval
     )
     async throws(RequestError) -> (Data, HTTPURLResponse)
     {
+        // configure request
+        
         var urlRequest = URLRequest(url: endpoint)
         
         urlRequest.httpMethod = method.rawValue
@@ -83,9 +82,9 @@ public enum HTTP
             urlRequest.addValue(value, forHTTPHeaderField: field)
         }
         
-        let (responseContent, response): (Data, URLResponse)
+        // encode content and send request
         
-        do
+        return try await throwingRequestError
         {
             if let content
             {
@@ -93,22 +92,35 @@ public enum HTTP
                 urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
             }
             
-            (responseContent, response) = try await withTimeout(after: timeoutInterval)
+            let (responseContent, response) = try await withTimeout(after: timeoutInterval)
             {
                 try await URLSession.shared.data(for: urlRequest)
             }
+            
+            guard let httpResponse = response as? HTTPURLResponse else
+            {
+                throw RequestError.noHTTPResponse(response, responseContent)
+            }
+            
+            return (responseContent, httpResponse)
         }
-        catch { throw RequestError(error) }
-        
-        guard let httpResponse = response as? HTTPURLResponse
-        else { throw .noHTTPResponse(response, responseContent) }
-        
-        return (responseContent, httpResponse)
     }
+    
+    public static var defaultTimeoutInterval: Duration = .seconds(10)
     
     public enum Method: String
     {
         case GET, POST, PUT, DELETE, PATCH
+    }
+    
+    private static func throwingRequestError<Result>
+    (
+        action: () async throws -> Result
+    )
+    async throws(RequestError) -> Result
+    {
+        do { return try await action() }
+        catch { throw RequestError(error) }
     }
     
     public enum RequestError: Error, CustomStringConvertible
@@ -179,6 +191,8 @@ extension URL
         self = url
     }
 }
+
+// TODO: everything from here on belongs to SwiftyToolz !
 
 public struct InvalidURLStringError: Error
 {
