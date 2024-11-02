@@ -12,10 +12,8 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(
-            url: "https://github.com/flowtoolz/SwiftyToolz.git",
-            exact: "0.5.1"
-        )
+        .package(url: "https://github.com/flowtoolz/SwiftyToolz.git", exact: "0.5.2")
+//        .package(path: "../SwiftyToolz")
     ],
     targets: [
         .target(
