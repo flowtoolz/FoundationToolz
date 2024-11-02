@@ -185,19 +185,43 @@ public struct InvalidURLStringError: Error
     let invalidURLString: URLString
 }
 
-public struct URLString: ExpressibleByStringLiteral
+// Allow URLString as right operand
+public func + (base: URLString, path: URLString) -> URLString {
+   base + path.value
+}
+
+// Append path operator
+public func + (base: URLString, path: String) -> URLString {
+   // Handle empty path
+   guard !path.isEmpty else { return base }
+   
+   // Get base without trailing slash
+   let baseValue = base.value.hasSuffix("/")
+       ? String(base.value.dropLast())
+       : base.value
+   
+   // Get path without leading slash
+   let pathValue = path.hasPrefix("/")
+       ? String(path.dropFirst())
+       : path
+   
+   // Combine with single slash
+   return URLString(baseValue + "/" + pathValue)
+}
+
+public struct URLString: ExpressibleByStringLiteral, Sendable
 {
     public init(stringLiteral value: String)
     {
         self.value = value
     }
     
-    init(_ value: String)
+    public init(_ value: String)
     {
         self.value = value
     }
     
-    let value: String
+    public let value: String
 }
 
 @available(macOS 14.0, iOS 16.0, *)
