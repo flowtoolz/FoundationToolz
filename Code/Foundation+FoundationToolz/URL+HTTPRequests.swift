@@ -2,7 +2,7 @@ import Foundation
 import SwiftyToolz
 
 // TODO: check where this extension is used and dissolve it, it's unnecessary. use directly HTTP instead.
-@available(macOS 14.0, iOS 17.0, tvOS 13.0.0, watchOS 6.0.0, *)
+@available(macOS 10.15, iOS 13.0, *)
 public extension URL
 {
     /**

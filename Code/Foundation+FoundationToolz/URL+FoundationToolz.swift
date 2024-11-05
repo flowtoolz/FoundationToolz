@@ -1,13 +1,22 @@
 import Foundation
 import SwiftyToolz
 
-@available(macOS 14.0, iOS 17.0, *)
 extension URL
 {
     init(validating urlString: URLString) throws(InvalidURLStringError)
     {
-        guard let url = URL(string: urlString.value, encodingInvalidCharacters: false)
-        else { throw InvalidURLStringError(invalidURLString: urlString) }
+        let url: URL?
+        
+        if #available(macOS 14.0, iOS 17.0, *) {
+            url = URL(string: urlString.value, encodingInvalidCharacters: false)
+        } else {
+            url = URL(string: urlString.value)
+        }
+        
+        guard let url else
+        {
+            throw InvalidURLStringError(invalidURLString: urlString)
+        }
         
         self = url
     }

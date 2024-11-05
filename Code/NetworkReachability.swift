@@ -2,6 +2,7 @@ import Foundation
 import Network
 import SwiftyToolz
 
+@available(macOS 10.14, *)
 public class NetworkReachability
 {
     // MARK: - Initialization

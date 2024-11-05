@@ -2,7 +2,7 @@ import FoundationToolz
 import Foundation
 import SwiftyToolz
 
-@available(macOS 14.0, iOS 17.0, *)
+@available(macOS 10.15, iOS 13.0, *)
 public enum HTTP
 {
     public static func sendRequest<Response: Decodable>
@@ -12,7 +12,7 @@ public enum HTTP
         content: Encodable? = nil,
         authorizationValue: String? = nil,
         addingHeaders headersToAdd: [String: String]? = nil,
-        timeoutInterval: Duration = defaultTimeoutInterval
+        timeoutSeconds: Double = defaultTimeoutSeconds
     )
     async throws(RequestError) -> Response
     {
@@ -23,7 +23,7 @@ public enum HTTP
                                   content: content,
                                   authorizationValue: authorizationValue,
                                   addingHeaders: headersToAdd,
-                                  timeoutInterval: timeoutInterval)
+                                  timeoutSeconds: timeoutSeconds)
         }
     }
     
@@ -34,7 +34,7 @@ public enum HTTP
         content: Encodable? = nil,
         authorizationValue: String? = nil,
         addingHeaders headersToAdd: [String: String]? = nil,
-        timeoutInterval: Duration = defaultTimeoutInterval
+        timeoutSeconds: Double = defaultTimeoutSeconds
     )
     async throws(RequestError) -> Response
     {
@@ -43,7 +43,7 @@ public enum HTTP
                                                                     content: content,
                                                                     authorizationValue: authorizationValue,
                                                                     addingHeaders: headersToAdd,
-                                                                    timeoutInterval: timeoutInterval)
+                                                                    timeoutSeconds: timeoutSeconds)
         
         guard (200 ... 299).contains(httpResponse.statusCode) else
         {
@@ -64,7 +64,7 @@ public enum HTTP
         content: Encodable? = nil,
         authorizationValue: String? = nil,
         addingHeaders headersToAdd: [String: String]? = nil,
-        timeoutInterval: Duration = defaultTimeoutInterval
+        timeoutSeconds: Double = defaultTimeoutSeconds
     )
     async throws(RequestError) -> (Data, HTTPURLResponse)
     {
@@ -94,7 +94,7 @@ public enum HTTP
                 urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
             }
             
-            let (responseContent, response) = try await withTimeout(after: timeoutInterval)
+            let (responseContent, response) = try await withTimeout(afterSeconds: timeoutSeconds)
             {
                 try await URLSession.shared.data(for: urlRequest)
             }
@@ -108,7 +108,7 @@ public enum HTTP
         }
     }
     
-    public static var defaultTimeoutInterval: Duration = .seconds(10)
+    public static var defaultTimeoutSeconds: Double = 20
     
     public enum Method: String
     {
@@ -157,7 +157,7 @@ public enum HTTP
             case .encodingError(let encodingError):
                 "💥 Encoding error (reason: \(encodingError.failureReason ?? "nil")): " + encodingError.localizedDescription
             case .timeout(let timeoutError):
-                "💥 Timeout after " + timeoutError.duration.description
+                "💥 Timeout after \(timeoutError.seconds) seconds"
             case .urlError(let urlError):
                 "💥 URL error (error code: \(urlError.code.rawValue)): " + urlError.localizedDescription
             case .noHTTPResponse(_, let responseContent):

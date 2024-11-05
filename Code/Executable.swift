@@ -57,7 +57,7 @@ open class Executable
         }
         
         do {
-            if #available(OSX 10.15.4, *) {
+            if #available(macOS 10.15.4, *) {
                 try inPipe.fileHandleForWriting.write(contentsOf: input)
             } else {
                 inPipe.fileHandleForWriting.write(input)

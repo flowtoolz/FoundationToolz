@@ -4,7 +4,6 @@ import Foundation
 
 extension Process
 {
-    @available(OSX 10.13, *)
     func runExecutable(at filePath: String, arguments: [String]) throws -> String
     {
         let input = Pipe()

@@ -1,10 +1,9 @@
-// swift-tools-version:5.6
+// swift-tools-version: 6.0
 
 import PackageDescription
 
 let package = Package(
     name: "FoundationToolz",
-    platforms: [.iOS(.v12), .tvOS(.v12), .macOS(.v10_14), .watchOS(.v5)],
     products: [
         .library(
             name: "FoundationToolz",
