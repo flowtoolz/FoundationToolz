@@ -3,11 +3,13 @@ import SwiftyToolz
 
 public extension Decodable
 {
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     init?(fromFilePath filePath: String)
     {
         self.init(from: URL(fileURLWithPath: filePath))
     }
     
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     init?(from file: URL?)
     {
         if let decodedSelf = Self(Data(from: file))
@@ -20,6 +22,7 @@ public extension Decodable
         }
     }
     
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     init?(_ jsonData: Data?)
     {
         guard let jsonData else { return nil }
@@ -43,6 +46,7 @@ public extension Decodable
 
 public extension Encodable
 {
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     @discardableResult
     func save(toFilePath filePath: String,
               options: JSONEncoder.OutputFormatting = .prettyPrinted) -> URL?
@@ -50,6 +54,7 @@ public extension Encodable
         encode(options: options)?.save(toFilePath: filePath)
     }
     
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     @discardableResult
     func save(to file: URL?,
               options: JSONEncoder.OutputFormatting = .prettyPrinted) -> URL?
@@ -57,6 +62,7 @@ public extension Encodable
         encode(options: options)?.save(to: file)
     }
     
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     func encode(options: JSONEncoder.OutputFormatting = .prettyPrinted) -> Data?
     {
         do

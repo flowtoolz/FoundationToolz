@@ -105,6 +105,7 @@ public extension URL
         return query
     }
     
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     static var documentDirectory: URL?
     {
         do
@@ -126,6 +127,7 @@ public extension URL
         url.appendingPathComponent(pathComponent)
     }
     
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     var isDirectory: Bool
     {
         do

@@ -25,6 +25,7 @@ public extension String
         self = String(utf16CodeUnits: &unicodeCharacter, count: 1)
     }
     
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     init?(with filePath: String)
     {
         do

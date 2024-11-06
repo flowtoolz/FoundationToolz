@@ -19,6 +19,7 @@ public extension Dictionary
     }
     
     /// Dictionary representing URL query parameters
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     func stringFromParameters() -> String
     {
         let parameterArray = self.map

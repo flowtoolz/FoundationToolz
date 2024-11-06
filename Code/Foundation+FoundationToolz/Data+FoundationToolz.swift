@@ -14,11 +14,13 @@ public extension Data
                                           options: .prettyPrinted)
     }
     
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     init?(fromFilePath filePath: String)
     {
         self.init(from: URL(fileURLWithPath: filePath))
     }
     
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     init?(from file: URL?)
     {
         guard let file = file, FileManager.default.itemExists(file) else { return nil }
@@ -34,12 +36,14 @@ public extension Data
         }
     }
     
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     @discardableResult
     func save(toFilePath filePath: String) -> URL?
     {
         save(to: URL(fileURLWithPath: filePath))
     }
     
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     @discardableResult
     func save(to file: URL?) -> URL?
     {

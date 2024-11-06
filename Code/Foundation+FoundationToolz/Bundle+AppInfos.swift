@@ -3,6 +3,7 @@ import SwiftyToolz
 
 public extension Bundle
 {
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     func debugLogInfos()
     {
         guard let infoDictionary else

@@ -4,6 +4,7 @@ import Foundation
 import SwiftyToolz
 
 /// This does not work in a sandboxed app!
+@available(macOS 10.15, *)
 open class Executable: @unchecked Sendable
 {
     // MARK: - Life Cycle
@@ -46,6 +47,7 @@ open class Executable: @unchecked Sendable
         process.standardInput = inPipe
     }
     
+    @available(macOS 10.15, *)
     public func receive(input: Data) {
         guard isRunning else {
             log(error: "\(Self.self) cannot receive input while not running.")

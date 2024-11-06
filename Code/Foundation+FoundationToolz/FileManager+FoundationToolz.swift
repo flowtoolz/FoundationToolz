@@ -3,6 +3,7 @@ import SwiftyToolz
 
 public extension FileManager
 {
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     @discardableResult
     func ensureDirectoryExists(_ dir: URL) -> URL?
     {
@@ -20,6 +21,7 @@ public extension FileManager
         }
     }
     
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     @discardableResult
     func removeItems(in directory: URL?) -> Bool
     {
@@ -51,6 +53,7 @@ public extension FileManager
      Removes items if they exist
      - Returns: `true` if all items were actually removed. `false` if at least one doesn't exist or an error occured.
      **/
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     @discardableResult
     func remove(_ items: [URL]) -> Bool
     {
@@ -61,6 +64,7 @@ public extension FileManager
      Removes an item if it exists
      - Returns: `true` if the item actually was removed. `false` if it doesn't exist or some error occured.
      **/
+    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     @discardableResult
     func remove(_ item: URL?) -> Bool
     {
