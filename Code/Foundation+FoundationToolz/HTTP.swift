@@ -2,7 +2,7 @@ import FoundationToolz
 import Foundation
 import SwiftyToolz
 
-@available(macOS 10.15, iOS 13.0, *)
+@available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
 public enum HTTP
 {
     public static func sendRequest<Response: Decodable>

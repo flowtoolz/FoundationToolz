@@ -7,7 +7,7 @@ extension URL
     {
         let url: URL?
         
-        if #available(macOS 14.0, iOS 17.0, *) {
+        if #available(macOS 14.0, iOS 17.0, watchOS 10.0, tvOS 17.0, *) {
             url = URL(string: urlString.value, encodingInvalidCharacters: false)
         } else {
             url = URL(string: urlString.value)
