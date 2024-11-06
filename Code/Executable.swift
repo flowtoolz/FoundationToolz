@@ -5,14 +5,17 @@ import SwiftyToolz
 
 /// This does not work in a sandboxed app!
 @available(macOS 10.15, *)
-open class Executable: @unchecked Sendable
+public final class Executable: Sendable
 {
     // MARK: - Life Cycle
     
-    public init(config: Configuration) throws {
+    public init(config: Configuration,
+                processor: ExecutableProcessor) throws {
         guard FileManager.default.fileExists(atPath: config.command) else {
             throw "Executable does not exist at given path \(config.command)"
         }
+        
+        self.processor = processor
         
         try setupProcess(with: config)
         setupInput()
@@ -28,15 +31,11 @@ open class Executable: @unchecked Sendable
         outPipe.fileHandleForReading.readabilityHandler = { [weak self] outHandle in
             let processOutput = outHandle.availableData
             if processOutput.count > 0 {
-                self?.didSendOutput(processOutput)
+                self?.processor.didSend(output: processOutput)
             }
         }
         
         process.standardOutput = outPipe
-    }
-    
-    public var didSendOutput: (Data) -> Void = { _ in
-        log(warning: "Executable did send output, but handler has not been set")
     }
     
     private let outPipe = Pipe()
@@ -74,13 +73,9 @@ open class Executable: @unchecked Sendable
     private func setupErrorOutput() {
         errorPipe.fileHandleForReading.readabilityHandler = { [weak self] errorHandle in
             let errorData = errorHandle.availableData
-            if errorData.count > 0 { self?.didSendError(errorData) }
+            if errorData.count > 0 { self?.processor.didSend(error: errorData) }
         }
         process.standardError = errorPipe
-    }
-    
-    public var didSendError: (Data) -> Void = { _ in
-        log(warning: "Executable did send error, but handler has not been set")
     }
     
     private let errorPipe = Pipe()
@@ -114,12 +109,8 @@ open class Executable: @unchecked Sendable
         // call the client's termination handler when the process terminates
         process.terminationHandler = { [weak self] process in
             log("\(Self.self) terminated. code: \(process.terminationReason.rawValue)")
-            self?.didTerminate()
+            self?.processor.didTerminate()
         }
-    }
-    
-    public var didTerminate: () -> Void = {
-        log(warning: "Executable did terminate, but handler has not been set")
     }
     
     public func run() throws {
@@ -143,6 +134,8 @@ open class Executable: @unchecked Sendable
     
     public let process = Process()
     
+    private let processor: ExecutableProcessor
+    
     // MARK: - Configuration
     
     public struct Configuration: Codable {
@@ -159,6 +152,12 @@ open class Executable: @unchecked Sendable
         public var arguments: [String]
         public var environment: [String: String]
     }
+}
+
+public protocol ExecutableProcessor: Sendable {
+    func didSend(output: Data)
+    func didSend(error: Data)
+    func didTerminate()
 }
 
 #endif
