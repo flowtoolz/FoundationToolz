@@ -4,7 +4,7 @@ import Foundation
 import SwiftyToolz
 
 /// This does not work in a sandboxed app!
-open class Executable
+open class Executable: @unchecked Sendable
 {
     // MARK: - Life Cycle
     

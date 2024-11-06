@@ -3,7 +3,7 @@ import Network
 import SwiftyToolz
 
 @available(macOS 10.14, *)
-public class NetworkReachability
+public class NetworkReachability: @unchecked Sendable
 {
     // MARK: - Initialization
     
@@ -11,20 +11,20 @@ public class NetworkReachability
     
     private init()
     {
-        pathMonitor.pathUpdateHandler = notifyObserversWithNetworkPath
+        pathMonitor.pathUpdateHandler = {
+            [weak self] networkPath in
+            
+            let update: Update =
+            {
+                guard networkPath.status == .satisfied else { return .noInternet }
+                return networkPath.isExpensive ? .expensiveInternet : .fullInternet
+            }()
+            
+            self?.sendToObservers(update)
+        }
+        
         pathMonitor.start(queue: DispatchQueue(label: "Network Reachability Monitor",
                                                qos: .default))
-    }
-    
-    private func notifyObserversWithNetworkPath(_ networkPath: NWPath)
-    {
-        let update: Update =
-        {
-            guard networkPath.status == .satisfied else { return .noInternet }
-            return networkPath.isExpensive ? .expensiveInternet : .fullInternet
-        }()
-        
-        sendToObservers(update)
     }
     
     // MARK: - Primitive Observability

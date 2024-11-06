@@ -70,30 +70,32 @@ public enum HTTP
     {
         // configure request
         
-        var urlRequest = URLRequest(url: endpoint)
-        
-        urlRequest.httpMethod = method.rawValue
-        
-        if let authorizationValue
-        {
-            urlRequest.setValue(authorizationValue, forHTTPHeaderField: "Authorization")
-        }
-        
-        for (field, value) in (headersToAdd ?? [:])
-        {
-            urlRequest.addValue(value, forHTTPHeaderField: field)
-        }
-        
-        // encode content and send request
-        
         return try await throwingRequestError
         {
-            if let content
-            {
-                urlRequest.httpBody = try JSONEncoder().encode(content)
-                urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            }
-            
+            let urlRequest: URLRequest = try {
+                var newURLRequest = URLRequest(url: endpoint)
+                
+                newURLRequest.httpMethod = method.rawValue
+                
+                if let authorizationValue
+                {
+                    newURLRequest.setValue(authorizationValue, forHTTPHeaderField: "Authorization")
+                }
+                
+                for (field, value) in (headersToAdd ?? [:])
+                {
+                    newURLRequest.addValue(value, forHTTPHeaderField: field)
+                }
+                
+                if let content
+                {
+                    newURLRequest.httpBody = try JSONEncoder().encode(content)
+                    newURLRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+                }
+                
+                return newURLRequest
+            }()
+        
             let (responseContent, response) = try await withTimeout(afterSeconds: timeoutSeconds)
             {
                 try await URLSession.shared.data(for: urlRequest)
@@ -108,7 +110,7 @@ public enum HTTP
         }
     }
     
-    public static var defaultTimeoutSeconds: Double = 20
+    public static let defaultTimeoutSeconds: Double = 20
     
     public enum Method: String
     {

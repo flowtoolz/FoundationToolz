@@ -11,7 +11,7 @@ public extension URL
 }
 
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-public class WebSocket
+public final class WebSocket: @unchecked Sendable
 {
     // MARK: - Life Cycle
     
