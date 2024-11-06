@@ -4,20 +4,22 @@ import SwiftyToolz
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public extension URL
 {
-    func webSocket() throws -> WebSocket
+    func webSocket(processor: WebSocketProcessor) throws -> WebSocket
     {
-        try WebSocket(self)
+        try WebSocket(self, processor: processor)
     }
 }
 
 @available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-public final class WebSocket: @unchecked Sendable
+public final class WebSocket: Sendable
 {
     // MARK: - Life Cycle
     
-    init(_ url: URL) throws
+    init(_ url: URL, processor: WebSocketProcessor) throws
     {
         self.url = try url.with(scheme: .ws)
+        self.processor = processor
+        
         webSocketTask = URLSession.shared.webSocketTask(with: self.url)
         webSocketTask.resume()
         receiveNextMessage()
@@ -27,7 +29,8 @@ public final class WebSocket: @unchecked Sendable
     {
         if webSocketTask.state == .suspended || webSocketTask.state == .running
         {
-            didCloseWithError(self, "WebSocket is being deinitialized while still suspended or running")
+            processor.didCloseWithError(webSocket: self,
+                                        error: "WebSocket is being deinitialized while still suspended or running")
         }
     }
     
@@ -48,31 +51,18 @@ public final class WebSocket: @unchecked Sendable
         case .success(let message):
             switch message
             {
-            case .data(let data): didReceiveData(data)
-            case .string(let text): didReceiveText(text)
+            case .data(let data): processor.didReceive(data: data)
+            case .string(let text): processor.didReceive(text: text)
             default: log(error: "Unknown type of WebSocket message")
             }
             
             receiveNextMessage()
         case .failure(let error):
-            didCloseWithError(self, error)
+            processor.didCloseWithError(webSocket: self, error: error)
         }
     }
     
-    public var didReceiveData: (Data) -> Void =
-    {
-        _ in log(warning: "Data handler not set")
-    }
-    
-    public var didReceiveText: (String) -> Void =
-    {
-        _ in log(warning: "Text handler not set")
-    }
-    
-    public var didCloseWithError: (WebSocket, Error) -> Void =
-    {
-        _, _ in log(warning: "Error handler not set")
-    }
+    private let processor: WebSocketProcessor
     
     // MARK: - Sending Messages
     
@@ -90,6 +80,13 @@ public final class WebSocket: @unchecked Sendable
     
     public let url: URL
     private let webSocketTask: URLSessionWebSocketTask
+}
+
+@available(OSX 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+public protocol WebSocketProcessor: Sendable {
+    func didReceive(data: Data)
+    func didReceive(text: String)
+    func didCloseWithError(webSocket: WebSocket, error: Error)
 }
 
 public extension URL
