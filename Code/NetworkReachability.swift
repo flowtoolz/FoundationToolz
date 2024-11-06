@@ -2,8 +2,8 @@ import Foundation
 import Network
 import SwiftyToolz
 
-@available(macOS 10.14, *)
-public class NetworkReachability: @unchecked Sendable
+@available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
+public actor NetworkReachability
 {
     // MARK: - Initialization
     
@@ -20,7 +20,9 @@ public class NetworkReachability: @unchecked Sendable
                 return networkPath.isExpensive ? .expensiveInternet : .fullInternet
             }()
             
-            self?.sendToObservers(update)
+            Task { [weak self] in
+                await self?.sendToObservers(update)
+            }
         }
         
         pathMonitor.start(queue: DispatchQueue(label: "Network Reachability Monitor",
@@ -53,7 +55,7 @@ public class NetworkReachability: @unchecked Sendable
         let receive: (Update) -> Void
     }
     
-    public enum Update { case noInternet, expensiveInternet, fullInternet }
+    public enum Update: Sendable { case noInternet, expensiveInternet, fullInternet }
     
     private let pathMonitor = NWPathMonitor()
 }
