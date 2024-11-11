@@ -72,6 +72,11 @@ public extension Data
         utf8String ?? debugDescription
     }
     
+    init(utf8String: String)
+    {
+        self = Data(utf8String.utf8)
+    }
+    
     var utf8String: String?
     {
         String(data: self, encoding: .utf8)
