@@ -68,18 +68,19 @@ public enum HTTP
     )
     async throws(RequestError) -> (Data, HTTPURLResponse)
     {
-        // configure request
-        
-        return try await throwingRequestError
+        try await throwingRequestError
         {
-            let urlRequest: URLRequest = try {
+            // configure request
+            let urlRequest: URLRequest = try
+            {
                 var newURLRequest = URLRequest(url: endpoint)
                 
                 newURLRequest.httpMethod = method.rawValue
                 
                 if let authorizationValue
                 {
-                    newURLRequest.setValue(authorizationValue, forHTTPHeaderField: "Authorization")
+                    newURLRequest.setValue(authorizationValue,
+                                           forHTTPHeaderField: "Authorization")
                 }
                 
                 for (field, value) in (headersToAdd ?? [:])
@@ -90,17 +91,20 @@ public enum HTTP
                 if let content
                 {
                     newURLRequest.httpBody = try JSONEncoder().encode(content)
-                    newURLRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
+                    newURLRequest.setValue("application/json",
+                                           forHTTPHeaderField: "Content-Type")
                 }
                 
                 return newURLRequest
             }()
         
+            // send request
             let (responseContent, response) = try await withTimeout(afterSeconds: timeoutSeconds)
             {
                 try await URLSession.shared.data(for: urlRequest)
             }
             
+            // expect http response
             guard let httpResponse = response as? HTTPURLResponse else
             {
                 throw RequestError.noHTTPResponse(response, responseContent)
