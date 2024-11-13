@@ -7,14 +7,7 @@ public extension Dictionary
     {
         get throws
         {
-            if let infoString = try Data(jsonObject: self).utf8String
-            {
-                return infoString
-            }
-            else
-            {
-                throw "Could not decode Data (encoded Dictionary) to String"
-            }
+            try Data(jsonObject: self).utf8String
         }
     }
     

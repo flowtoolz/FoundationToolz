@@ -77,9 +77,9 @@ public extension Data
         self = Data(utf8String.utf8)
     }
     
-    var utf8String: String?
+    var utf8String: String
     {
-        String(data: self, encoding: .utf8)
+        String(decoding: self, as: UTF8.self)
     }
 }
 
