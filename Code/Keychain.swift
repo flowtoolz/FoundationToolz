@@ -128,8 +128,7 @@ public enum Keychain {
         
         // Decode the item
         guard let itemData = itemReference as? Data else {
-            // an item for the given key simply does not exist in the keychain (yet)
-            return nil
+            throw "Could not read Keychain item as Data. Item tag: " + (firstItem.tag?.utf8String ?? "nil")
         }
         
         return try Item(jsonData: itemData)
