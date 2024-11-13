@@ -14,7 +14,7 @@ public enum Keychain {
                 do {
                     return try load(firstItem: description)
                 } catch {
-                    log(error: error.localizedDescription)
+                    log(error: error.readable.message)
                     return nil
                 }
             }
@@ -25,7 +25,7 @@ public enum Keychain {
                                with: newValue,
                                addIfNotFound: true)
                 } catch {
-                    log(error: error.localizedDescription)
+                    log(error: error.readable.message)
                 }
             }
         }
@@ -106,23 +106,27 @@ public enum Keychain {
     /// - Throws: Error if reading from Keychain fails or if decoding fails
     public static func load<Item: Decodable>(firstItem: ItemDescription) throws -> Item? {
         // Set up the query for fetching data from Keychain
-        let query: [CFString: Any] = [
+        let query = [
             kSecAttrApplicationTag: firstItem.tag,
             kSecClass: firstItem.class.kSecClassValue,
             kSecReturnData: true,
             kSecAttrSynchronizable: kSecAttrSynchronizableAny,
             kSecMatchLimit: kSecMatchLimitOne
-        ]
+        ] as CFDictionary
         
-        // Fetch the item from Keychain
+        // Fetch the item
         var itemReference: CFTypeRef?
         
-        let readStatus = SecItemCopyMatching(query as CFDictionary, &itemReference)
+        let readStatus = SecItemCopyMatching(query, &itemReference)
+        
+        // Handle result status
+        guard readStatus != errSecItemNotFound else { return nil }
         
         guard readStatus == errSecSuccess else {
             throw "Could not read the Keychain. OS Status: " + readStatus.description
         }
         
+        // Decode the item
         guard let itemData = itemReference as? Data else {
             // an item for the given key simply does not exist in the keychain (yet)
             return nil
@@ -144,6 +148,8 @@ public enum Keychain {
         
         // Delete the item from Keychain
         let deletionStatus = SecItemDelete(query as CFDictionary)
+        
+        guard deletionStatus != errSecItemNotFound else { return }
         
         guard deletionStatus == errSecSuccess else {
             throw "Could not delete items. OS Status: " + deletionStatus.description
