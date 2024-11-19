@@ -14,26 +14,18 @@ public extension Data
                                           options: .prettyPrinted)
     }
     
-    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
-    init?(fromFilePath filePath: String)
+    init(fromFilePath filePath: String) throws
     {
-        self.init(from: URL(fileURLWithPath: filePath))
+        try self.init(from: URL(fileURLWithPath: filePath))
     }
     
-    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
-    init?(from file: URL?)
+    init(from file: URL?) throws
     {
-        guard let file = file, FileManager.default.itemExists(file) else { return nil }
+        guard let file, FileManager.default.itemExists(file) else {
+            throw "File does not exist: " + (file?.absoluteString ?? "nil")
+        }
         
-        do
-        {
-            self = try Data(contentsOf: file)
-        }
-        catch
-        {
-            log(error: error.localizedDescription)
-            return nil
-        }
+        self = try Data(contentsOf: file)
     }
     
     @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)

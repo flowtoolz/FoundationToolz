@@ -3,43 +3,19 @@ import SwiftyToolz
 
 public extension Decodable
 {
-    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
-    init?(fromFilePath filePath: String)
+    init(fromFilePath filePath: String) throws
     {
-        self.init(from: URL(fileURLWithPath: filePath))
+        try self.init(fromJSONFile: URL(fileURLWithPath: filePath))
     }
     
-    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
-    init?(from file: URL?)
+    init(fromJSONFile file: URL) throws
     {
-        if let decodedSelf = Self(Data(from: file))
-        {
-            self = decodedSelf
-        }
-        else
-        {
-            return nil
-        }
+        self = try Self(jsonData: Data(from: file))
     }
     
-    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
-    init?(_ jsonData: Data?)
+    init(jsonData: Data?) throws
     {
-        guard let jsonData else { return nil }
-        
-        do
-        {
-            self = try Self(jsonData: jsonData)
-        }
-        catch
-        {
-            log(error.readable)
-            return nil
-        }
-    }
-    
-    init(jsonData: Data) throws
-    {
+        guard let jsonData else { throw "data is nil" }
         self = try JSONDecoder().decode(Self.self, from: jsonData)
     }
 }
