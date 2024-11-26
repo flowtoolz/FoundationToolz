@@ -15,27 +15,45 @@ public extension Decodable
     
     init(jsonData: Data?) throws
     {
-        guard let jsonData else { throw "data is nil" }
+        guard let jsonData else { throw "jsonData is nil" }
         self = try JSONDecoder().decode(Self.self, from: jsonData)
     }
 }
 
 public extension Encodable
 {
-    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     @discardableResult
     func save(toFilePath filePath: String,
               options: JSONEncoder.OutputFormatting = .prettyPrinted) throws -> URL
     {
-        try encode(options: options).save(toFilePath: filePath)
+        if #available(iOS 16.0, macOS 13.0, *)
+        {
+            try save(to: URL(filePath: filePath))
+        }
+        else
+        {
+            try save(to: URL(fileURLWithPath: filePath))
+        }
     }
     
-    @available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *)
     @discardableResult
     func save(to file: URL?,
               options: JSONEncoder.OutputFormatting = .prettyPrinted) throws -> URL
     {
-        try encode(options: options).save(to: file)
+        guard let file else { throw "File is nil" }
+        
+        let data = try encode(options: options)
+        
+        if FileManager.default.itemExists(file)
+        {
+            try data.write(to: file, options: .atomic)
+        }
+        else if !FileManager.default.createFile(atPath: file.path, contents: data)
+        {
+            throw "Failed to create file: " + file.absoluteString
+        }
+        
+        return file
     }
     
     func encode(options: JSONEncoder.OutputFormatting = .prettyPrinted) throws -> Data
